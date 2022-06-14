@@ -82,7 +82,10 @@ prompt_end() {
 
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
-  prompt_segment red default "%m"
+}
+
+prompt_context() {
+  prompt_segment red default " %m "
 }
 
 # Git: branch/detached head, dirty status
