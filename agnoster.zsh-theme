@@ -112,7 +112,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment blue $PRIMARY_FG '%25<...<%~%<<'
+  prompt_segment blue white '%25<...<%~%<<'
 }
 
 # Status:
