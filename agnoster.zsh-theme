@@ -26,6 +26,7 @@
 
 typeset -aHg AGNOSTER_PROMPT_SEGMENTS=(
     prompt_status
+    prompt_aws
     prompt_context
     prompt_virtualenv
     prompt_dir
@@ -167,6 +168,12 @@ prompt_agnoster_setup() {
   zstyle ':vcs_info:*' check-for-changes false
   zstyle ':vcs_info:git*' formats '%b'
   zstyle ':vcs_info:git*' actionformats '%b (%a)'
+}
+
+prompt_aws() {
+  if [[ -n $AWS_PROFILE ]]; then
+    $AWS_PROFILE
+  fi
 }
 
 prompt_agnoster_setup "$@"
