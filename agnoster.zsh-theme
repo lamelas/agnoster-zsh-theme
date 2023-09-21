@@ -1,4 +1,4 @@
-# vim:ft=zsh ts=2 sw=2 sts=2
+§# vim:ft=zsh ts=2 sw=2 sts=2
 #
 # agnoster's Theme - https://gist.github.com/3712874
 # A Powerline-inspired theme for ZSH
@@ -172,7 +172,7 @@ prompt_agnoster_setup() {
 
 prompt_aws() {
   if [[ -n $AWS_PROFILE ]]; then
-    $AWS_PROFILE
+    echo $AWS_PROFILE
   fi
 }
 
