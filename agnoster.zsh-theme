@@ -1,4 +1,4 @@
-§# vim:ft=zsh ts=2 sw=2 sts=2
+# vim:ft=zsh ts=2 sw=2 sts=2
 #
 # agnoster's Theme - https://gist.github.com/3712874
 # A Powerline-inspired theme for ZSH
@@ -26,11 +26,11 @@
 
 typeset -aHg AGNOSTER_PROMPT_SEGMENTS=(
     prompt_status
-    #prompt_aws
     prompt_context
     prompt_virtualenv
     prompt_dir
     prompt_git
+    #prompt_aws
     prompt_end
 )
 
@@ -87,6 +87,12 @@ prompt_context() {
 
 prompt_context() {
   prompt_segment red default " %m "
+}
+
+prompt_aws() {
+  if [[ -n $AWS_PROFILE ]]; then
+    prompt_segment blue white "$AWS_PROFILE"
+  fi
 }
 
 # Git: branch/detached head, dirty status
@@ -168,12 +174,6 @@ prompt_agnoster_setup() {
   zstyle ':vcs_info:*' check-for-changes false
   zstyle ':vcs_info:git*' formats '%b'
   zstyle ':vcs_info:git*' actionformats '%b (%a)'
-}
-
-prompt_aws() {
-  if [[ -n $AWS_PROFILE ]]; then
-    echo $AWS_PROFILE
-  fi
 }
 
 prompt_agnoster_setup "$@"
