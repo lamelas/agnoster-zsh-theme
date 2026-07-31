@@ -122,7 +122,23 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment blue white '%25<...<%~%<<'
+  local dir path
+  local -a parts
+
+  if [[ $PWD == "$HOME/Developer/"* ]]; then
+    path=${PWD#"$HOME/Developer/"}
+    parts=(${(s:/:)path})
+
+    if (( ${#parts} > 2 )); then
+      dir=$(print -P ' %25<...<'"$path"'%<<')
+    else
+      dir=" $path"
+    fi
+  else
+    dir='%25<...<%~%<<'
+  fi
+
+  prompt_segment blue white "$dir"
 }
 
 # Status:
@@ -145,7 +161,7 @@ prompt_virtualenv() {
     color=cyan
     prompt_segment $color $PRIMARY_FG
     #print -Pn " $(basename $VIRTUAL_ENV) "
-    print -Pn "🐍 $(python --version | awk '{print $2}')"
+    print -Pn "🐍 $(python3 --version | awk '{print $2}')"
   fi
 }
 
@@ -158,8 +174,37 @@ prompt_agnoster_main() {
   done
 }
 
+_agnoster_git_head_mtime() {
+  # Pure-zsh upward search for .git/HEAD + zstat mtime, no fork.
+  local dir=$PWD head
+  while [[ -n $dir ]]; do
+    if [[ -f $dir/.git/HEAD ]]; then
+      head=$dir/.git/HEAD
+      break
+    elif [[ -f $dir/.git ]]; then
+      # worktree: .git is a file pointing at the real gitdir
+      local gitdir=${"$(<$dir/.git)"#gitdir: }
+      [[ -f $gitdir/HEAD ]] && head=$gitdir/HEAD
+      break
+    fi
+    [[ $dir == / ]] && break
+    dir=${dir%/*}
+    [[ -z $dir ]] && dir=/
+  done
+  [[ -z $head ]] && return
+  zstat +mtime $head 2>/dev/null
+}
+
 prompt_agnoster_precmd() {
-  vcs_info
+  # vcs_info forks git; skip the fork unless dir changed or .git/HEAD mtime
+  # changed (covers checkout/switch without leaving the directory).
+  zmodload -F zsh/stat b:zstat 2>/dev/null
+  local head_mtime=$(_agnoster_git_head_mtime)
+  if [[ $PWD != $_AGNOSTER_VCS_PWD || $head_mtime != $_AGNOSTER_VCS_HEAD_MTIME ]]; then
+    vcs_info
+    _AGNOSTER_VCS_PWD=$PWD
+    _AGNOSTER_VCS_HEAD_MTIME=$head_mtime
+  fi
   PROMPT='%{%f%b%k%}$(prompt_agnoster_main) '
 }
 
